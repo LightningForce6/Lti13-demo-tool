@@ -1,0 +1,56 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        # An LTI tool renders inside an LMS iframe, which makes every cookie it sets a
+        # third-party cookie. Without SameSite=None the session cookie is dropped and the
+        # Deep Linking submit arrives with no launch attached. SameSite=None requires Secure,
+        # so the tool must be served over HTTPS in any real deployment. Chrome exempts
+        # http://localhost, which is the only reason local development works without TLS.
+        same-site: none
+        secure: true
+        http-only: true
+
+spring:
+  application:
+    name: lti13-demo-tool
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    dev.ltidemo: DEBUG
+
+lti:
+  # Must match what is registered in the LMS, with no trailing slash.
+  # When tunnelling for local development, set this to the public HTTPS URL.
+  tool-base-url: ${TOOL_BASE_URL:http://localhost:8080}
+
+  # Optional path to a JWKS file holding this tool's private key(s). Without it a key is
+  # generated at startup, which is convenient for a demo and unusable in production: the
+  # public key changes on every restart while platforms are still caching the old one.
+  key-file: ${LTI_KEY_FILE:}
+
+  state-ttl-seconds: 300
+  clock-skew-seconds: 60
+
+  # One entry per LMS registration. In production this is a table, not configuration —
+  # institutions install the tool themselves and rows get created at registration time.
+  platforms:
+    - name: Canvas test instance
+      issuer: https://canvas.instructure.com
+      client-id: ${CANVAS_CLIENT_ID:replace-me}
+      deployment-ids:
+        - ${CANVAS_DEPLOYMENT_ID:replace-me}
+      oidc-auth-url: https://sso.canvaslms.com/api/lti/authorize_redirect
+      jwks-url: https://sso.canvaslms.com/api/lti/security/jwks
+      token-url: https://sso.canvaslms.com/login/oauth2/token
+
+    # - name: Moodle sandbox
+    #   issuer: https://moodle.example.edu
+    #   client-id: replace-me
+    #   deployment-ids: [ "1" ]
+    #   oidc-auth-url: https://moodle.example.edu/mod/lti/auth.php
+    #   jwks-url: https://moodle.example.edu/mod/lti/certs.php
+    #   token-url: https://moodle.example.edu/mod/lti/token.php

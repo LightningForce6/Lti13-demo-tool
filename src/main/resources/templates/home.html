@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LTI 1.3 Demo Tool</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <h1>LTI 1.3 Demo Tool</h1>
+    <p class="lede">
+        A minimal LTI 1.3 tool: OIDC third-party initiated login, id_token validation against the
+        platform's keyset, Deep Linking content selection, and a published JWKS.
+    </p>
+
+    <h2>Registration values</h2>
+    <p>These are what an LMS administrator needs when adding this tool.</p>
+    <table>
+        <tr><th>Tool base URL</th><td><code th:text="${baseUrl}"></code></td></tr>
+        <tr><th>OIDC login initiation URL</th><td><code th:text="${loginUrl}"></code></td></tr>
+        <tr><th>Redirect / target link URI</th><td><code th:text="${launchUrl}"></code></td></tr>
+        <tr><th>Public JWKS URL</th><td><code th:text="${jwksUrl}"></code></td></tr>
+    </table>
+    <p class="note">
+        Several platforms compare the redirect URI by exact string match. A trailing slash on one
+        side and not the other is a failed launch with an unhelpful error.
+    </p>
+
+    <h2>Registered platforms</h2>
+    <p th:if="${platforms.isEmpty()}" class="warn">
+        None configured. Add one under <code>lti.platforms</code> in <code>application.yml</code>.
+    </p>
+    <table th:unless="${platforms.isEmpty()}">
+        <tr><th>Name</th><th>Issuer</th><th>Client ID</th><th>Deployments</th></tr>
+        <tr th:each="p : ${platforms}">
+            <td th:text="${p.name}"></td>
+            <td><code th:text="${p.issuer}"></code></td>
+            <td><code th:text="${p.clientId}"></code></td>
+            <td><code th:text="${#strings.listJoin(p.deploymentIds, ', ')}"></code></td>
+        </tr>
+    </table>
+</main>
+</body>
+</html>

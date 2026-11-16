@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Select content</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <h1>Select content for your course</h1>
+    <p class="lede">
+        Launched from
+        <strong th:text="${launch.contextTitle()}">course</strong>
+        by <span th:text="${launch.displayName()}">instructor</span>.
+    </p>
+
+    <form method="post" th:action="@{/lti/deeplink/select}">
+        <ul class="tasks">
+            <li th:each="t : ${tasks}">
+                <label>
+                    <input type="checkbox" name="taskIds" th:value="${t.id()}">
+                    <span class="title" th:text="${t.title()}"></span>
+                    <span class="desc" th:text="${t.description()}"></span>
+                </label>
+            </li>
+        </ul>
+        <button type="submit">Add to course</button>
+    </form>
+
+    <details>
+        <summary>What this launch contained</summary>
+        <table>
+            <tr><th>Message type</th><td><code th:text="${launch.messageType()}"></code></td></tr>
+            <tr><th>Platform</th><td th:text="${launch.platform().getName()}"></td></tr>
+            <tr><th>Deployment</th><td><code th:text="${launch.deploymentId()}"></code></td></tr>
+            <tr><th>Stable user key</th><td><code th:text="${launch.stableUserKey()}"></code></td></tr>
+            <tr><th>Roles</th><td><code th:text="${launch.roles()}"></code></td></tr>
+        </table>
+    </details>
+</main>
+</body>
+</html>

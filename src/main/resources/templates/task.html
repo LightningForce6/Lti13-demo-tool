@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Task</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <div th:if="${task != null}">
+        <h1 th:text="${task.title()}">Task</h1>
+        <p class="lede" th:text="${task.description()}"></p>
+    </div>
+    <div th:if="${task == null}">
+        <h1>No task attached</h1>
+        <p class="lede">
+            This resource link carried no <code>task_id</code> custom parameter, so there is
+            nothing to open. That usually means the link was created outside Deep Linking.
+        </p>
+    </div>
+
+    <p class="ok">
+        Signed in as <strong th:text="${launch.displayName()}">student</strong> —
+        no separate login, no account creation.
+    </p>
+
+    <h2>What the platform asserted</h2>
+    <p>
+        Every value below came from a token signed by the institution's LMS and verified against
+        its published keyset. None of it was supplied by the browser.
+    </p>
+    <table>
+        <tr><th>Course</th><td th:text="${launch.contextTitle()}"></td></tr>
+        <tr><th>Course ID</th><td><code th:text="${launch.contextId()}"></code></td></tr>
+        <tr><th>Resource link</th><td th:text="${launch.resourceLinkTitle()}"></td></tr>
+        <tr><th>Role</th>
+            <td th:text="${launch.isInstructor() ? 'Instructor' : 'Learner'}"></td></tr>
+        <tr><th>Stable user key</th><td><code th:text="${launch.stableUserKey()}"></code></td></tr>
+        <tr><th>Stable course key</th><td><code th:text="${launch.stableContextKey()}"></code></td></tr>
+    </table>
+
+    <p class="note">
+        The stable user key is issuer + client_id + deployment_id + sub. It is what a real
+        integration stores against its own user record. Email is deliberately not used for
+        matching: institutions often withhold it, and reused addresses silently merge accounts.
+    </p>
+
+    <details th:if="${launch.agsEndpoint() != null or launch.nrpsEndpoint() != null}">
+        <summary>Service endpoints captured for later</summary>
+        <p>
+            Present in this launch and stored now, because AGS and NRPS need them and they are
+            only offered at launch time.
+        </p>
+        <table>
+            <tr th:if="${launch.agsEndpoint() != null}">
+                <th>AGS</th><td><code th:text="${launch.agsEndpoint()}"></code></td></tr>
+            <tr th:if="${launch.nrpsEndpoint() != null}">
+                <th>NRPS</th><td><code th:text="${launch.nrpsEndpoint()}"></code></td></tr>
+        </table>
+    </details>
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Launch rejected</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <h1>Launch rejected</h1>
+    <p class="warn" th:text="${message}">Reason</p>
+    <p class="note" th:if="${cause != null}" th:text="${cause}"></p>
+    <p class="note">
+        The message names the specific check that failed rather than reporting a generic error.
+        When a university's IT team reports a broken integration, that difference is the whole
+        investigation.
+    </p>
+</main>
+</body>
+</html>
