@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Course roster</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <h1>Course roster</h1>
+    <p class="lede">
+        <span th:text="${#lists.size(members)}">0</span> member(s) in
+        <strong th:text="${launch.contextTitle()}">the course</strong>, following every page of
+        the response.
+    </p>
+
+    <table>
+        <tr><th>Learners</th><td th:text="${learners}"></td></tr>
+        <tr><th>Instructors</th><td th:text="${instructors}"></td></tr>
+        <tr><th>Not active</th><td th:text="${inactive}"></td></tr>
+        <tr><th>Without an email address</th><td th:text="${withoutEmail}"></td></tr>
+    </table>
+    <p class="note">
+        That last count is the interesting one. Whether names and emails appear depends on the
+        institution's privacy configuration rather than on the scopes granted, so a roster sync
+        has to treat their absence as normal. The <code>user_id</code> is always present, and it
+        is the same value that arrives as <code>sub</code> when that person launches — which is
+        how a roster gets reconciled with users the tool has actually seen.
+    </p>
+
+    <h2>Members</h2>
+    <table>
+        <tr><th>user_id</th><th>Name</th><th>Role</th><th>Status</th></tr>
+        <tr th:each="m : ${members}">
+            <td><code th:text="${m.userId()}"></code></td>
+            <td th:text="${m.displayName()}"></td>
+            <td th:text="${m.isInstructor() ? 'Instructor' : (m.isLearner() ? 'Learner' : '—')}"></td>
+            <td th:text="${m.status() != null ? m.status() : 'Active'}"></td>
+        </tr>
+    </table>
+</main>
+</body>
+</html>

@@ -45,12 +45,47 @@
         matching: institutions often withhold it, and reused addresses silently merge accounts.
     </p>
 
+    <h2>LTI Advantage services</h2>
+    <p>
+        Both endpoints below arrived in this launch rather than from configuration — there is no
+        other way to learn them, which is why the launch captures them.
+    </p>
+
+    <div th:if="${launch.agsEndpoint() != null}">
+        <h3>Assignment and Grade Services</h3>
+        <form method="post" th:action="@{/lti/services/grade}">
+            <label>Score out of 100
+                <input type="number" name="score" value="83" min="0" max="100" step="1">
+            </label>
+            <label class="inline">
+                <input type="checkbox" name="awaitingReview" value="true">
+                leave for the instructor to confirm (PendingManual)
+            </label>
+            <button type="submit">Find or create the column, then post the score</button>
+        </form>
+    </div>
+    <p th:unless="${launch.agsEndpoint() != null}" class="note">
+        No AGS claim in this launch. Usually that means the tool was not attached to a graded
+        item, or the gradebook scopes were not enabled on the registration.
+    </p>
+
+    <div th:if="${launch.nrpsEndpoint() != null and launch.isInstructor()}">
+        <h3>Names and Role Provisioning Services</h3>
+        <form method="post" th:action="@{/lti/services/roster}">
+            <label class="inline">
+                <input type="checkbox" name="thisLinkOnly" value="true">
+                restrict to this resource link (rlid)
+            </label>
+            <button type="submit">Fetch the roster</button>
+        </form>
+    </div>
+    <p th:if="${launch.nrpsEndpoint() != null and !launch.isInstructor()}" class="note">
+        The roster is available on this launch, but retrieving it is an instructor action — the
+        data belongs to other people.
+    </p>
+
     <details th:if="${launch.agsEndpoint() != null or launch.nrpsEndpoint() != null}">
-        <summary>Service endpoints captured for later</summary>
-        <p>
-            Present in this launch and stored now, because AGS and NRPS need them and they are
-            only offered at launch time.
-        </p>
+        <summary>Raw service claims</summary>
         <table>
             <tr th:if="${launch.agsEndpoint() != null}">
                 <th>AGS</th><td><code th:text="${launch.agsEndpoint()}"></code></td></tr>

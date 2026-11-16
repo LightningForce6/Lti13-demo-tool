@@ -8,10 +8,12 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dev.ltidemo.key.ToolKeyService;
 import dev.ltidemo.security.StateService;
+import dev.ltidemo.stub.StubPlatform;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,14 +40,17 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = {
                 "server.port=8089",
                 "lti.tool-base-url=http://localhost:8089",
-                "lti.platforms[0].name=Test platform",
+                "lti.platforms[0].name=Stub platform",
                 "lti.platforms[0].issuer=https://platform.test",
                 "lti.platforms[0].client-id=test-client-1",
                 "lti.platforms[0].deployment-ids[0]=dep-1",
                 "lti.platforms[0].oidc-auth-url=https://platform.test/auth",
                 "lti.platforms[0].jwks-url=http://localhost:8089/.well-known/jwks.json",
-                "lti.platforms[0].token-url=https://platform.test/token"
+                "lti.platforms[0].token-url=http://localhost:8089/stub/token"
         })
+// Identical configuration to AdvantageServiceTest, including this import, so both classes
+// share one application context. Two contexts asking for the same fixed port would collide.
+@Import(StubPlatform.class)
 class LaunchFlowTest {
 
     private static final String ISSUER = "https://platform.test";

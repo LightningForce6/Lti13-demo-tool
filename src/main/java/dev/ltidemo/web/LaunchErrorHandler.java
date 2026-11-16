@@ -1,6 +1,7 @@
 package dev.ltidemo.web;
 
 import dev.ltidemo.launch.LaunchValidationException;
+import dev.ltidemo.service.ServiceCallException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,15 @@ public class LaunchErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String onInvalidLaunch(LaunchValidationException ex, Model model) {
         log.warn("Rejected launch: {}", ex.getMessage());
+        model.addAttribute("message", ex.getMessage());
+        model.addAttribute("cause", ex.getCause() == null ? null : ex.getCause().getMessage());
+        return "launch-error";
+    }
+
+    @ExceptionHandler(ServiceCallException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public String onServiceFailure(ServiceCallException ex, Model model) {
+        log.warn("Service call failed: {}", ex.getMessage());
         model.addAttribute("message", ex.getMessage());
         model.addAttribute("cause", ex.getCause() == null ? null : ex.getCause().getMessage());
         return "launch-error";

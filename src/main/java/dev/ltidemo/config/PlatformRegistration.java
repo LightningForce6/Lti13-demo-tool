@@ -39,8 +39,18 @@ public class PlatformRegistration {
     /** Where we fetch this platform's public keys to verify id_token signatures. */
     private String jwksUrl;
 
-    /** OAuth 2.0 token endpoint. Needed for AGS/NRPS later; not used by launch. */
+    /** OAuth 2.0 token endpoint, for AGS and NRPS access tokens. Not used by launch. */
     private String tokenUrl;
+
+    /**
+     * What to put in the {@code aud} of a client assertion sent to {@link #tokenUrl}.
+     *
+     * <p>Left blank, the token URL itself is used, which is what most platforms expect. A few
+     * want the platform's issuer instead and will reject a correct assertion with a bare
+     * {@code invalid_client} — an error that tells you nothing and costs an afternoon. Set it
+     * explicitly for those.
+     */
+    private String tokenAudience;
 
     public String getName() {
         return name;
@@ -96,6 +106,14 @@ public class PlatformRegistration {
 
     public void setTokenUrl(String tokenUrl) {
         this.tokenUrl = tokenUrl;
+    }
+
+    public String getTokenAudience() {
+        return tokenAudience;
+    }
+
+    public void setTokenAudience(String tokenAudience) {
+        this.tokenAudience = tokenAudience;
     }
 
     public boolean allowsDeployment(String deploymentId) {

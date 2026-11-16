@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Score posted</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<main>
+    <h1>Score posted</h1>
+    <p class="ok">
+        The column now exists in the course gradebook and carries this score. Open the LMS
+        gradebook to see it from the instructor's side.
+    </p>
+
+    <h2>The gradebook column</h2>
+    <table>
+        <tr><th>Line item</th><td><code th:text="${lineItem.id()}"></code></td></tr>
+        <tr><th>Label</th><td th:text="${lineItem.label()}"></td></tr>
+        <tr><th>Score maximum</th><td th:text="${lineItem.scoreMaximum()}"></td></tr>
+        <tr><th>Resource link</th><td><code th:text="${lineItem.resourceLinkId()}"></code></td></tr>
+        <tr><th>Tool resource id</th><td><code th:text="${lineItem.resourceId()}"></code></td></tr>
+    </table>
+    <p class="note">
+        The column was reused rather than created if the launch was already bound to one, or if
+        a search of the collection by resource link found an earlier one. Skipping that search is
+        how a tool adds a duplicate column to someone's gradebook on every deployment.
+    </p>
+
+    <h2>What was sent</h2>
+    <table>
+        <tr><th>User</th><td><code th:text="${score.userId()}"></code></td></tr>
+        <tr><th>Score</th>
+            <td><span th:text="${score.scoreGiven()}"></span> /
+                <span th:text="${score.scoreMaximum()}"></span></td></tr>
+        <tr><th>Activity progress</th><td th:text="${score.activityProgress()}"></td></tr>
+        <tr><th>Grading progress</th><td th:text="${score.gradingProgress()}"></td></tr>
+        <tr><th>Timestamp</th><td><code th:text="${score.timestamp()}"></code></td></tr>
+    </table>
+    <p class="note">
+        <strong>userId</strong> is the <code>sub</code> from this launch, which is the only
+        identifier the platform will accept here. <strong>scoreMaximum</strong> matches the
+        column's own maximum: post 1 out of 1 against a column of 100 and platforms disagree
+        about whether that is full marks or one per cent. <strong>gradingProgress</strong> of
+        <code>PendingManual</code> is the honest setting for advisory output — it records the
+        number and tells the LMS a human still decides.
+    </p>
+
+    <h2>Scopes this launch granted</h2>
+    <ul>
+        <li th:each="s : ${grantedScopes}"><code th:text="${s}"></code></li>
+    </ul>
+    <p class="note">
+        Checked before the call rather than after. A platform can grant fewer scopes than the
+        registration requested, and finding that out from a 403 three calls later leaves nothing
+        to point at.
+    </p>
+</main>
+</body>
+</html>
